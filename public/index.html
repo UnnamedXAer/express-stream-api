@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+
+	<style>
+		.video {
+			border: 1px solid tomato;
+		}
+
+		.error {
+			color: tomato;
+		}
+
+		.available_media li {
+			/* display: inline-block; */
+			cursor: pointer;
+		}
+	</style>
+
+</head>
+
+<body>
+	<article>
+		<h1>video</h1>
+		<video class="video" width="550px" height="550px" controls>
+			<p class="error">Your browser not support video tag</p>
+		</video>
+		<button onclick="playerAction('play')">play</button>
+		<button onclick="playerAction('pause')">pause</button>
+		<button onclick="playerAction('download')">download</button>
+	</article>
+	<article class="available_media">
+		<h2>Available positions</h2>
+		<button onclick="loadMedia()">Load</button>
+		<ul></ul>
+		<p class="error"></p>
+	</article>
+	<script>
+		/** @type HTMLVideoElement */
+		const video = document.querySelector(".video");
+		function mediaListItemClickHandler(ev) {
+			console.log(video);
+			video.setAttribute("src", "/stream/" + ev.target.getAttribute("data-source"));
+		}
+
+		function loadMedia() {
+			fetch("/available-media").then(res => res.json()).then(res => {
+				console.log(res);
+				const mediaList = document.querySelector(".available_media ul");
+				res.forEach(m => {
+					const li = document.createElement('li');
+					li.innerText = `${m.name} <${m.ext}> created at: ${new Date(m.createTime).toLocaleString()}`;
+					li.setAttribute("data-source", `${m.name}.${m.ext}`)
+					li.onclick = mediaListItemClickHandler
+					mediaList.appendChild(li);
+				});
+			}).catch(err => {
+				document.querySelector(".available_media .error").textContent = err.toString()
+			})
+		}
+
+		function playerAction(action) {
+			switch (action) {
+				case 'play':
+					video.play()
+					break;
+				case 'pause':
+					video.pause()
+					break;
+				case 'download':
+
+					console.log(video.duration())
+					break;
+				default:
+					break;
+			}
+		}
+	</script>
+</body>
+
+</html>
