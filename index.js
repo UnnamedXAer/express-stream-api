@@ -143,3 +143,5 @@ const server = app.listen(3000, () => {
 process.on('exit', (code) => {
 	logger.info('exiting with code: ' + code);
 });
+
+export default app;
